@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OrderMicroservice.Domain.Entities;
 using OrderMicroservice.Domain.Enums;
 using OrderMicroservice.Repository.Repository;
 using OrderMicroservice.Service.Services.Models;
 using OrderMicroservice.Service.Services.RabbitMqService;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrderMicroservice.Service.Services.OrderService
 {
@@ -23,18 +22,22 @@ namespace OrderMicroservice.Service.Services.OrderService
             _rabbitMqService = rabbitMqService;
         }
 
-        public async Task CreateAsync(CreateOrderModel model)
+        public async Task<int> FormAnOrder(FormAnOrderModel model)
         {
-            var order = new Order
+            var order = (await _orderRepository.GetByPredicate(_ => _.CartId == model.CartId)).FirstOrDefault();
+            if (order == null)
             {
-                UserId = model.UserId,
-                AddressId = model.AddressId,
-                State = OrderStates.New,
-                CartId = model.CartId,
-                TotalPrice = model.TotalPrice
-            };
-
-            await _orderRepository.CreateAsync(order);
+                var orderId = await CreateOrder(model);
+                return orderId;
+            }
+            else
+            {
+                var totalPrice = await _rabbitMqService.GetTotalPrice(model.CartId);
+                order.AddressId = model.AddressId;
+                order.TotalPrice = decimal.Parse(totalPrice);
+                await _orderRepository.UpdateAsync(order);
+                return order.Id;
+            }
         }
 
         public async Task DeleteByIdAsync(int id)
@@ -53,25 +56,72 @@ namespace OrderMicroservice.Service.Services.OrderService
         {
             var order = await _orderRepository.GetByIdAsync(id);
 
-            var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(await _rabbitMqService.GetCartInfo(order.CartId));
+            var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(await _rabbitMqService.GetProductsInfo(order.CartId));
 
             var address =
                 JsonConvert.DeserializeObject<AddressViewModel>(await _rabbitMqService.GetAddressInfo(order.AddressId));
 
             var orderView = new OrderViewModel
             {
+                Id = id,
                 UserId = order.UserId,
                 Products = products,
                 Address = address,
+                TotalPrice = order.TotalPrice
             };
 
             return orderView;
         }
 
-        public async Task<IEnumerable<Order>> GetByUserId(Guid userId)
+        public async Task<IEnumerable<UserOrdersViewModel>> GetByUserId(Guid userId)
         {
             var orders = await _orderRepository.GetByPredicate(_ => _.UserId == userId);
-            return orders;
+            var ordersView = new List<UserOrdersViewModel>();
+            foreach (var order in orders)
+            {
+                if (order == null) continue;
+
+                //var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(await _rabbitMqService.GetProductsInfo(order.CartId));
+
+                var address =
+                    JsonConvert.DeserializeObject<AddressViewModel>(await _rabbitMqService.GetAddressInfo(order.AddressId));
+                var orderView = new UserOrdersViewModel
+                {
+                    Id = order.Id,
+                    Address = address.City+","+address.Street+","+address.HouseNumber,
+                    TotalPrice = order.TotalPrice,
+                    State = order.State.ToString()
+                };
+
+                ordersView.Add(orderView);
+            }
+
+            return ordersView;
+        }
+
+        public async Task ConfirmOrder(int orderId)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            order.State = OrderStates.Processing;
+            await _orderRepository.UpdateAsync(order);
+
+            _rabbitMqService.LockTheCart(order.CartId);
+        }
+
+        private async Task<int> CreateOrder(FormAnOrderModel model)
+        {
+            var totalPrice = await _rabbitMqService.GetTotalPrice(model.CartId);
+            var order = new Order
+            {
+                UserId = model.UserId,
+                AddressId = model.AddressId,
+                State = OrderStates.New,
+                CartId = model.CartId,
+                TotalPrice = decimal.Parse(totalPrice)
+            };
+
+            var orderId = (await _orderRepository.CreateAsync(order)).Entity.Id;
+            return orderId;
         }
     }
 }

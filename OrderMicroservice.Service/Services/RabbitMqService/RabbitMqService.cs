@@ -20,6 +20,9 @@ namespace OrderMicroservice.Service.Services.RabbitMqService
         private const string ResponseCartQueueName = "responsecart";
         private const string RequestAddressQueueName = "requestaddress";
         private const string ResponseAddressQueueName = "responseaddress";
+        private const string RequestTotalPriceQueueName = "requesttotalprice";
+        private const string ResponseTotalPriceQueueName = "responsetotalprice";
+        private const string RequestLockTheCartQueueName = "requestlockthecart";
         private const string ExchangeName = "";
 
 
@@ -34,11 +37,14 @@ namespace OrderMicroservice.Service.Services.RabbitMqService
             _channel.QueueDeclare(ResponseCartQueueName, true, false, false, null);
             _channel.QueueDeclare(RequestAddressQueueName, true, false, false, null);
             _channel.QueueDeclare(ResponseAddressQueueName, true, false, false, null);
+            _channel.QueueDeclare(RequestTotalPriceQueueName, true, false, false, null);
+            _channel.QueueDeclare(ResponseTotalPriceQueueName, true, false, false, null);
 
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += Consumer_Received;
             _channel.BasicConsume(ResponseCartQueueName, true, consumer);
             _channel.BasicConsume(ResponseAddressQueueName, true, consumer);
+            _channel.BasicConsume(ResponseTotalPriceQueueName, true, consumer);
 
             _pendingMessages = new ConcurrentDictionary<string,
                 TaskCompletionSource<string>>();
@@ -65,7 +71,7 @@ namespace OrderMicroservice.Service.Services.RabbitMqService
             return tcs.Task;
         }
 
-        public Task<string> GetCartInfo(int cartId)
+        public Task<string> GetProductsInfo(int cartId)
         {
             var tcs = new TaskCompletionSource<string>();
 
@@ -78,6 +84,24 @@ namespace OrderMicroservice.Service.Services.RabbitMqService
             return tcs.Task;
         }
 
+        public Task<string> GetTotalPrice(int cartId)
+        {
+            var tcs = new TaskCompletionSource<string>();
+
+            var correlationId = Guid.NewGuid().ToString();
+
+            _pendingMessages[correlationId] = tcs;
+
+            Publish(cartId, correlationId, ResponseTotalPriceQueueName, RequestTotalPriceQueueName);
+
+            return tcs.Task;
+        }
+
+        public void LockTheCart(int cartId)
+        {
+            Publish(cartId, RequestLockTheCartQueueName);
+        }
+
         private void Publish(int id, string correlationId, string responseQueueName, string requestQueueName)
         {
             var props = _channel.CreateBasicProperties();
@@ -88,6 +112,15 @@ namespace OrderMicroservice.Service.Services.RabbitMqService
 
             _channel.BasicPublish(ExchangeName, requestQueueName, props, body);
 
+        }
+
+        private void Publish (int id, string requestQueueName)
+        {
+            var props = _channel.CreateBasicProperties();
+            var strId = id.ToString();
+            var body = Encoding.UTF8.GetBytes(strId);
+
+            _channel.BasicPublish(ExchangeName, requestQueueName, props, body);
         }
 
         public void Dispose()

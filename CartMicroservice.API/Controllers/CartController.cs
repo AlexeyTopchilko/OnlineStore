@@ -116,7 +116,7 @@ namespace CartMicroservice.API.Controllers
         {
             try
             {
-                await _cartService.LockCart(orderId);
+                await _cartService.LockTheCart(orderId);
                 return Ok();
             }
             catch (SqlException ex)

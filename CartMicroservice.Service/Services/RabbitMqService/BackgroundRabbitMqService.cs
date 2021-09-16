@@ -1,28 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using CartMicroservice.Domain.Entities;
 using CartMicroservice.Repository.Repository;
+using CartMicroservice.Service.Services.CartService;
 using CartMicroservice.Service.Services.RabbitMqService.Models;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CartMicroservice.Service.Services.RabbitMqService
 {
     public class BackgroundRabbitMqService : BackgroundService
     {
-        private const string RequestQueueName = "requestcart";
+        private const string RequestProductsQueueName = "requestcart";
+        private const string RequestTotalPriceQueueName = "requesttotalprice";
+        private const string RequestLockTheCartQueueName = "requestlockthecart";
         private readonly IModel _channel;
-        private readonly IRepositoryGeneric<Domain.Entities.Cart> _repository;
+        private readonly IRepositoryGeneric<Cart> _repository;
         private readonly IRabbitMqService _rabbitMqService;
         private readonly IMapper _mapper;
+        private readonly ICartService _cartService;
 
-        public BackgroundRabbitMqService(IRepositoryGeneric<Domain.Entities.Cart> repository,
-            IRabbitMqService rabbitMqService, IMapper mapper)
+        public BackgroundRabbitMqService(IRepositoryGeneric<Cart> repository,
+            IRabbitMqService rabbitMqService, IMapper mapper, ICartService cartService)
         {
+            _cartService = cartService;
             _mapper = mapper;
             _rabbitMqService = rabbitMqService;
             _repository = repository;
@@ -31,7 +37,9 @@ namespace CartMicroservice.Service.Services.RabbitMqService
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
 
-            _channel.QueueDeclare(RequestQueueName, true, false, false, null);
+            _channel.QueueDeclare(RequestProductsQueueName, true, false, false, null);
+            _channel.QueueDeclare(RequestTotalPriceQueueName, true, false, false, null);
+            _channel.QueueDeclare(RequestLockTheCartQueueName, true, false, false, null);
         }
 
         private async void Consumer_Received(object sender, BasicDeliverEventArgs e)
@@ -41,9 +49,23 @@ namespace CartMicroservice.Service.Services.RabbitMqService
             var correlationId = e.BasicProperties.CorrelationId;
             var responseQueueName = e.BasicProperties.ReplyTo;
 
-            var responseMessage = await GetProductsInfo(cartId);
-
-            Publish(responseMessage, correlationId, responseQueueName);
+            string responseMessage;
+            switch (e.RoutingKey)
+            {
+                case RequestProductsQueueName:
+                    responseMessage = await GetProductsInfo(cartId);
+                    Publish(responseMessage, correlationId, responseQueueName);
+                    break;
+                case RequestTotalPriceQueueName:
+                    responseMessage = await GetTotalPrice(cartId);
+                    Publish(responseMessage, correlationId, responseQueueName);
+                    break;
+                case RequestLockTheCartQueueName:
+                    await _cartService.LockTheCart(cartId);
+                    break;
+                default:
+                    break;
+            }
         }
 
         private async Task<string> GetProductsInfo(int cartId)
@@ -52,6 +74,12 @@ namespace CartMicroservice.Service.Services.RabbitMqService
             var products = _mapper.Map<IEnumerable<ProductsRequestModel>>(cart.Products.Where(_ => _.DeletedDate == null));
             var response = await _rabbitMqService.SendAsync(products);
             return response;
+        }
+
+        private async Task<string> GetTotalPrice(int cartId)
+        {
+            var totalPrice = (await _repository.GetByIdAsync(cartId)).TotalPrice.ToString();
+            return totalPrice;
         }
 
         private void Publish(string responseMessage, string correlationId,
@@ -70,7 +98,9 @@ namespace CartMicroservice.Service.Services.RabbitMqService
         {
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += Consumer_Received;
-            _channel.BasicConsume(RequestQueueName, true, consumer);
+            _channel.BasicConsume(RequestProductsQueueName, true, consumer);
+            _channel.BasicConsume(RequestTotalPriceQueueName, true, consumer);
+            _channel.BasicConsume(RequestLockTheCartQueueName, true, consumer);
 
             return Task.CompletedTask;
         }

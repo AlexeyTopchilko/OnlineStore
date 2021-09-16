@@ -5,6 +5,8 @@ namespace OrderMicroservice.Service.Services.Models
 {
     public class OrderViewModel
     {
+        public int Id { get; set;
+        }
         public Guid UserId { get; init; }
 
         public IEnumerable<ProductViewModel> Products { get; set; }

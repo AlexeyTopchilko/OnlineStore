@@ -36,30 +36,51 @@ namespace CartMicroservice.Service.Services.CartService
             await _cartRepository.DeleteAsync(cart);
         }
 
-        //Change!!!
         public async Task<IEnumerable<CartViewModel>> GetAllAsync()
         {
-            var orders = await _cartRepository.GetAllAsync();
+            var carts = await _cartRepository.GetAllAsync();
+            var cartsView = new List<CartViewModel>();
+            foreach (var cart in carts)
+            {
+                if (cart == null) continue;
+                var products =
+                    _mapper.Map<IEnumerable<ProductsRequestModel>>(cart.Products.Where(_ => _.DeletedDate == null));
+                var productsResponse =
+                    JsonConvert.DeserializeObject<IEnumerable<ProductsResponseModel>>(
+                        await _rabbitMqService.SendAsync(products))?.ToList();
 
-            return _mapper.Map<IEnumerable<CartViewModel>>(orders);
+                var totalPrice = await CalculateTotalPrice(productsResponse);
+                cart.TotalPrice = totalPrice;
+                await _cartRepository.UpdateAsync(cart);
+                var cartView = new CartViewModel()
+                {
+                    Id = cart.Id,
+                    UserId = cart.UserId,
+                    Products = productsResponse,
+                    TotalPrice = totalPrice
+                };
+                cartsView.Add(cartView);
+            }
+
+            return cartsView;
         }
 
         public async Task<Cart> GetById(int id)
         {
-            var order = await _cartRepository.GetByIdAsync(id);
-            return order;
+            var cart = await _cartRepository.GetByIdAsync(id);
+            return cart;
         }
 
         public async Task<IEnumerable<Cart>> GetAllByUser(Guid id)
         {
-            var orders = await _cartRepository.GetByPredicate(_ => _.UserId == id);
-            return orders;
+            var carts = await _cartRepository.GetByPredicate(_ => _.UserId == id);
+            return carts;
         }
 
         public async Task AddToCart(AddToCartModel model)
         {
-            var hasActiveOrder = await HasNonLockedCart(model.UserId);
-            if (hasActiveOrder)
+            var hasActiveCart = await HasNonLockedCart(model.UserId);
+            if (hasActiveCart)
             {
                 await AddProductToExistingCart(model);
             }
@@ -84,21 +105,21 @@ namespace CartMicroservice.Service.Services.CartService
 
         public async Task<CartViewModel> GetActiveCartByUser(Guid userId)
         {
-            var order = await GetNonLockedByUser(userId);
+            var cart = await GetNonLockedByUser(userId);
 
-            if (order == null) return null;
-            var products = _mapper.Map<IEnumerable<ProductsRequestModel>>(order.Products.Where(_ => _.DeletedDate == null));
+            if (cart == null) return null;
+            var products = _mapper.Map<IEnumerable<ProductsRequestModel>>(cart.Products.Where(_ => _.DeletedDate == null));
             var productsResponse =
                 JsonConvert.DeserializeObject<IEnumerable<ProductsResponseModel>>(
                     await _rabbitMqService.SendAsync(products))?.ToList();
 
             var totalPrice = await CalculateTotalPrice(productsResponse);
-            order.TotalPrice = totalPrice;
-            await _cartRepository.UpdateAsync(order);
+            cart.TotalPrice = totalPrice;
+            await _cartRepository.UpdateAsync(cart);
             var orderView = new CartViewModel()
             {
-                Id = order.Id,
-                UserId = order.UserId,
+                Id = cart.Id,
+                UserId = cart.UserId,
                 Products = productsResponse,
                 TotalPrice = totalPrice
             };
@@ -106,20 +127,20 @@ namespace CartMicroservice.Service.Services.CartService
             return orderView;
         }
 
-        public async Task LockCart(int orderId)
+        public async Task LockTheCart(int cartId)
         {
-            var order = await _cartRepository.GetByIdAsync(orderId);
-            order.Locked = true;
-            await _cartRepository.UpdateAsync(order);
+            var cart = await _cartRepository.GetByIdAsync(cartId);
+            cart.Locked = true;
+            await _cartRepository.UpdateAsync(cart);
         }
 
         #region PrivateMethods
         private async Task<Cart> GetNonLockedByUser(Guid id)
         {
-            var order =
+            var cart =
                 (await _cartRepository.GetByPredicate(_ => _.UserId == id && _.DeletedDate == null && !_.Locked))
                 .FirstOrDefault();
-            return order;
+            return cart;
         }
 
         private static async Task<decimal> CalculateTotalPrice(IEnumerable<ProductsResponseModel> products)
@@ -139,11 +160,11 @@ namespace CartMicroservice.Service.Services.CartService
             {
                 UserId = model.UserId
             };
-            var activeOrder = (await _cartRepository.CreateAsync(cart)).Entity;
+            var activeCart = (await _cartRepository.CreateAsync(cart)).Entity;
 
             CartProducts products = new()
             {
-                OrderId = activeOrder.Id,
+                OrderId = activeCart.Id,
                 ProductId = model.Id,
                 Quantity = model.Quantity
             };
@@ -152,10 +173,10 @@ namespace CartMicroservice.Service.Services.CartService
 
         private async Task AddProductToExistingCart(AddToCartModel model)
         {
-            var order = await GetNonLockedByUser(model.UserId);
+            var cart = await GetNonLockedByUser(model.UserId);
             var currentProduct =
                 (await _cartProductsRepository.GetByPredicate(
-                    _ => _.OrderId == order.Id && _.ProductId == model.Id)).FirstOrDefault();
+                    _ => _.OrderId == cart.Id && _.ProductId == model.Id)).FirstOrDefault();
             if (currentProduct != null)
             {
                 if (currentProduct.DeletedDate != null)
@@ -175,7 +196,7 @@ namespace CartMicroservice.Service.Services.CartService
             {
                 CartProducts products = new()
                 {
-                    OrderId = order.Id,
+                    OrderId = cart.Id,
                     ProductId = model.Id,
                     Quantity = model.Quantity
                 };

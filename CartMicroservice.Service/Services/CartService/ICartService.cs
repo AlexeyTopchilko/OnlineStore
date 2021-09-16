@@ -23,6 +23,6 @@ namespace CartMicroservice.Service.Services.CartService
 
         Task<CartViewModel> GetActiveCartByUser(Guid userId);
 
-        Task LockCart(int orderId);
+        Task LockTheCart(int orderId);
     }
 }

@@ -220,6 +220,54 @@
       ],
       "UpstreamPathTemplate": "/CreateAddress",
       "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Order/GetOrderById?{params}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "9434"
+        }
+      ],
+      "UpstreamPathTemplate": "/GetOrderById?{params}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Order/FormAnOrder",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "9434"
+        }
+      ],
+      "UpstreamPathTemplate": "/FormAnOrder",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Order/ConfirmOrder?{params}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "9434"
+        }
+      ],
+      "UpstreamPathTemplate": "/ConfirmOrder?{params}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Order/GetOrdersByUserId?{params}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "9434"
+        }
+      ],
+      "UpstreamPathTemplate": "/GetOrdersByUserId?{params}",
+      "UpstreamHttpMethod": [ "GET" ]
     }
   ],
   "GlobalConfiguration": {}

@@ -13,8 +13,10 @@ namespace OrderMicroservice.Service.Services.OrderService
 
         Task<OrderViewModel> GetByIdAsync(int id);
 
-        Task<IEnumerable<Domain.Entities.Order>> GetByUserId(Guid userId);
+        Task<IEnumerable<UserOrdersViewModel>> GetByUserId(Guid userId);
 
-        Task CreateAsync(CreateOrderModel model);
+        Task<int> FormAnOrder(FormAnOrderModel model);
+
+        Task ConfirmOrder(int orderId);
     }
 }
