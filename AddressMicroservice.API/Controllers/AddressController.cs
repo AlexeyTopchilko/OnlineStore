@@ -1,10 +1,11 @@
-﻿using AddressMicroservice.Service.Services.AddressService;
+﻿using AddressMicroservice.Domain.Entities;
+using AddressMicroservice.Service.Services.AddressService;
 using AddressMicroservice.Service.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AddressMicroservice.API.Controllers
@@ -26,7 +27,7 @@ namespace AddressMicroservice.API.Controllers
             try
             {
                 var addresses = await _addressService.GetUserAddresses(userId);
-                return addresses.Any() ? Ok(addresses) : StatusCode(StatusCodes.Status404NotFound, new { errorText = "No addresses for user" });
+                return addresses != null ? Ok(addresses) : Ok(new List<Address>());
             }
             catch (SqlException ex)
             {

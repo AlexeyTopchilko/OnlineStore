@@ -41,6 +41,9 @@ namespace AuthenticationMicroservice.Service.Services.UserService
 
         public async Task AddAsync(RegisterModel model)
         {
+            if (await IsEmailExist(model.Email) || await IsUsernameExist(model.Username))
+                throw new InvalidOperationException();
+
             var user = new User
             {
                 Username = model.Username,

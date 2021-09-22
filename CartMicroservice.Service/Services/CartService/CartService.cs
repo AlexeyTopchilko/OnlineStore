@@ -31,6 +31,13 @@ namespace CartMicroservice.Service.Services.CartService
             _rabbitMqService = rabbitMqService;
         }
 
+        public async Task<int> GetTotalQuantity(Guid userId)
+        {
+            var cart = await GetNonLockedByUser(userId);
+            var totalQuantity = cart != null ? cart.Products.Where(_ => _.DeletedDate == null).Sum(_ => _.Quantity) : 0;
+            return totalQuantity;
+        }
+
         public async Task DeleteAsync(Cart cart)
         {
             await _cartRepository.DeleteAsync(cart);

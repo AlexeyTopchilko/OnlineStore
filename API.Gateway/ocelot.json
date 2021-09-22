@@ -26,22 +26,6 @@
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
-      "DownstreamPathTemplate": "/WeatherForecast",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": "10444"
-        }
-      ],
-      "UpstreamPathTemplate": "/Weather",
-      "UpstreamHttpMethod": [ "GET" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Key",
-        "AllowedScopes": []
-      }
-    },
-    {
       "DownstreamPathTemplate": "/api/Category/Categories",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -63,30 +47,6 @@
         }
       ],
       "UpstreamPathTemplate": "/Products?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Product/ProductsByCategory?{params}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": "10444"
-        }
-      ],
-      "UpstreamPathTemplate": "/ProductsByCategory?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Product/ProductsByName?{params}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": "10444"
-        }
-      ],
-      "UpstreamPathTemplate": "/ProductsByName?{params}",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
@@ -123,6 +83,18 @@
         }
       ],
       "UpstreamPathTemplate": "/GetActiveByUser?{params}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Cart/GetTotalQuantity?{params}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "48726"
+        }
+      ],
+      "UpstreamPathTemplate": "/GetTotalQuantity?{params}",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {

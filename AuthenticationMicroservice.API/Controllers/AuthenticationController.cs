@@ -3,6 +3,7 @@ using AuthenticationMicroservice.Service.Services.UserService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Threading.Tasks;
 
 namespace AuthenticationMicroservice.API.Controllers
@@ -28,7 +29,7 @@ namespace AuthenticationMicroservice.API.Controllers
                 var identity = await _userService.GetIdentityAsync(model);
                 if (identity == null)
                 {
-                    return StatusCode(StatusCodes.Status501NotImplemented, new Response { Status = "Error", Message = "Invalid username or password!" });
+                    return Ok(new Response { Status = "Error", Message = "Invalid username or password!" });
                 }
 
                 var jwt = _userService.CreateToken(identity);
@@ -57,11 +58,12 @@ namespace AuthenticationMicroservice.API.Controllers
         {
             try
             {
-                if (await _userService.IsEmailExist(model.Email) || await _userService.IsUsernameExist(model.Username))
-                    return StatusCode(StatusCodes.Status501NotImplemented, new Response { Status = "Error", Message = "Username or email already exists!" });
-
                 await _userService.AddAsync(model);
                 return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            }
+            catch (InvalidOperationException)
+            {
+                return Ok(new Response { Status = "Error", Message = "Username or email already exists!" });
             }
             catch (SqlException e)
             {

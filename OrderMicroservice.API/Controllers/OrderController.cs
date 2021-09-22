@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using OrderMicroservice.Service.Services.Models;
 using OrderMicroservice.Service.Services.OrderService;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrderMicroservice.API.Controllers
@@ -26,7 +27,7 @@ namespace OrderMicroservice.API.Controllers
             try
             {
                 var order = await _orderService.GetByIdAsync(orderId);
-                return Ok(order);
+                return order != null ? Ok(order) : Ok(new OrderViewModel());
             }
             catch (SqlException e)
             {
@@ -42,7 +43,7 @@ namespace OrderMicroservice.API.Controllers
             try
             {
                 var orders = await _orderService.GetByUserId(userId);
-                return Ok(orders);
+                return orders != null ? Ok(orders) : Ok(new List<UserOrdersViewModel>());
             }
             catch (SqlException e)
             {
@@ -72,6 +73,7 @@ namespace OrderMicroservice.API.Controllers
         public async Task<IActionResult> ConfirmOrder(int orderId)
         {
             try
+
             {
                 await _orderService.ConfirmOrder(orderId);
                 return Ok();

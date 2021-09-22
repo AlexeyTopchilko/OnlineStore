@@ -24,5 +24,7 @@ namespace CartMicroservice.Service.Services.CartService
         Task<CartViewModel> GetActiveCartByUser(Guid userId);
 
         Task LockTheCart(int orderId);
+
+        Task<int> GetTotalQuantity(Guid userId);
     }
 }

@@ -8,11 +8,11 @@ namespace CatalogMicroservice.Service.Services.ProductService
 {
     public interface IProductService
     {
-        Task<ProductsView> GetProductsAsync(GetProductsRequestModel model);
+        Task<ProductsView> GetProductsAsync(int sortMode, int skip, int take, int? categoryId = null, string name = null);
 
         Task<ProductView> GetProductByIdAsync(int id);
 
-        Task CreateAsync(Product product);
+        Task CreateAsync(string name, decimal price, string description);
 
         Task<bool> IsProductExistAsync(string productName);
 
@@ -22,11 +22,7 @@ namespace CatalogMicroservice.Service.Services.ProductService
 
         Task UpdateAsync(ProductView productView);
 
-        Task<ProductsView> GetByNameAsync(ProductsByNameRequestModel model);
-
-        Task<ProductsView> GetByCategoryAsync(ProductsByCategoryRequestModel model);
-
-        Task AddCategoryAsync(ProductsCategories productsCategories);
+        Task AddCategoryAsync(int categoryId, int productId);
 
         Task RemoveCategoryAsync(int productId, int categoryId);
     }

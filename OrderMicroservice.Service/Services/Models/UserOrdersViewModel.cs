@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OrderMicroservice.Service.Services.Models
+﻿namespace OrderMicroservice.Service.Services.Models
 {
     public class UserOrdersViewModel
     {

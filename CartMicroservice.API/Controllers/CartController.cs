@@ -43,7 +43,7 @@ namespace CartMicroservice.API.Controllers
             {
                 var order = await _cartService.GetActiveCartByUser(userId);
 
-                return order != null ? Ok(order) : StatusCode(StatusCodes.Status404NotFound);
+                return order != null ? Ok(order) : Ok(new CartViewModel());
             }
             catch (SqlException ex)
             {
@@ -118,6 +118,22 @@ namespace CartMicroservice.API.Controllers
             {
                 await _cartService.LockTheCart(orderId);
                 return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { errorText = $"Something going wrong! \n {ex.Message} " });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetTotalQuantity")]
+        public async Task<IActionResult> GetTotalQuantity(Guid userId)
+        {
+            try
+            {
+                var totalQuantity = await _cartService.GetTotalQuantity(userId);
+                return Ok(totalQuantity);
             }
             catch (SqlException ex)
             {

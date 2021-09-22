@@ -55,22 +55,27 @@ namespace OrderMicroservice.Service.Services.OrderService
         public async Task<OrderViewModel> GetByIdAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
-
-            var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(await _rabbitMqService.GetProductsInfo(order.CartId));
-
-            var address =
-                JsonConvert.DeserializeObject<AddressViewModel>(await _rabbitMqService.GetAddressInfo(order.AddressId));
-
-            var orderView = new OrderViewModel
+            if (order != null)
             {
-                Id = id,
-                UserId = order.UserId,
-                Products = products,
-                Address = address,
-                TotalPrice = order.TotalPrice
-            };
+                var productsInfo = await _rabbitMqService.GetProductsInfo(order.CartId);
+                var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(productsInfo);
 
-            return orderView;
+                var address =
+                    JsonConvert.DeserializeObject<AddressViewModel>(await _rabbitMqService.GetAddressInfo(order.AddressId));
+
+                var orderView = new OrderViewModel
+                {
+                    Id = id,
+                    UserId = order.UserId,
+                    Products = products,
+                    Address = address,
+                    TotalPrice = order.TotalPrice
+                };
+
+                return orderView;
+            }
+            else
+                return null;
         }
 
         public async Task<IEnumerable<UserOrdersViewModel>> GetByUserId(Guid userId)

@@ -2,6 +2,7 @@
 using CatalogMicroservice.Domain.Entities;
 using CatalogMicroservice.Repository.Models;
 using CatalogMicroservice.Repository.Models.Enums;
+using CatalogMicroservice.Repository.Models.ResponseModels;
 using CatalogMicroservice.Repository.Repository;
 using CatalogMicroservice.Service.Services.ProductService.Models;
 using CatalogMicroservice.Service.Services.ProductService.Models.RequestModels;
@@ -24,25 +25,31 @@ namespace CatalogMicroservice.Service.Services.ProductService
             _mapper = mapper;
         }
 
-        public async Task CreateAsync(Product product)
+        public async Task CreateAsync(string name, decimal price, string description)
         {
+            Product product = new()
+            {
+                Name = name,
+                Description = description,
+                Price = price
+            };
             await _productRepository.CreateAsync(product);
         }
 
-        public async Task<ProductsView> GetByCategoryAsync(ProductsByCategoryRequestModel model)
+        private async Task<ProductsResponse<Product>> GetByCategoryAsync(int sortMode, int skip, int take, int? categoryId)
         {
-            var sortProps = SetSortProps(model.SortMode, model.Skip, model.Take);
-            var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.ProductsCategories.Any(_ => _.CategoryId == model.Id) && _.DeletedDate == null, sortProps);
+            var sortProps = SetSortProps(sortMode, skip, take);
+            var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.ProductsCategories.Any(_ => _.CategoryId == categoryId) && _.DeletedDate == null, sortProps);
 
-            return products.Products.Any() ? _mapper.Map<ProductsView>(products) : null;
+            return products;
         }
 
-        public async Task<ProductsView> GetByNameAsync(ProductsByNameRequestModel model)
+        private async Task<ProductsResponse<Product>> GetByNameAsync(int sortMode, int skip, int take, string name)
         {
-            var sortProps = SetSortProps(model.SortMode, model.Skip, model.Take);
-            var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.Name.Contains(model.Name) && _.DeletedDate == null, sortProps);
+            var sortProps = SetSortProps(sortMode, skip, take);
+            var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.Name.Contains(name) && _.DeletedDate == null, sortProps);
 
-            return products.Products.Any() ? _mapper.Map<ProductsView>(products) : null;
+            return products;
         }
 
         public async Task<ProductView> GetProductByIdAsync(int id)
@@ -52,12 +59,26 @@ namespace CatalogMicroservice.Service.Services.ProductService
             return product != null && product.DeletedDate == null ? _mapper.Map<ProductView>(product) : null;
         }
 
-        public async Task<ProductsView> GetProductsAsync(GetProductsRequestModel model)
+        public async Task<ProductsView> GetProductsAsync(int sortMode, int skip, int take, int? categoryId = null, string name = null)
         {
-            var sortProps = SetSortProps(model.SortMode, model.Skip, model.Take);
-            var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.DeletedDate == null, sortProps);
+            if (categoryId == null && name == null)
+            {
+                var sortProps = SetSortProps(sortMode, skip, take);
+                var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.DeletedDate == null, sortProps);
 
-            return products.Products.Any() ? _mapper.Map<ProductsView>(products) : null;
+                return products.Products.Any() ? _mapper.Map<ProductsView>(products) : null;
+            }
+            else if (categoryId != null)
+            {
+                var products = await GetByCategoryAsync(sortMode, skip, take, categoryId);
+                return products.Products != null ? _mapper.Map<ProductsView>(products) : null;
+            }
+            else if (name != null)
+            {
+                var products = await GetByNameAsync(sortMode, skip, take, name);
+                return products.Products != null ? _mapper.Map<ProductsView>(products) : null;
+            }
+            return null;
         }
 
         public async Task<bool> IsProductExistAsync(string productName)
@@ -87,8 +108,13 @@ namespace CatalogMicroservice.Service.Services.ProductService
             }
         }
 
-        public async Task AddCategoryAsync(ProductsCategories productsCategories)
+        public async Task AddCategoryAsync(int categoryId, int productId)
         {
+            ProductsCategories productsCategories = new()
+            {
+                ProductId = productId,
+                CategoryId = categoryId
+            };
             if (!(await _productsCategoriesRepository
                 .GetByPredicateAsync(_ => _.CategoryId == productsCategories.CategoryId && _.ProductId == productsCategories.ProductId))
                 .Any())
