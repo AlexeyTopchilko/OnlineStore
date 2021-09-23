@@ -16,7 +16,7 @@ namespace OrderMicroservice.Repository.Context.Configuration
             builder.Property(_ => _.CartId).IsRequired();
             builder.Property(_ => _.TotalPrice).IsRequired();
             builder.Property(_ => _.UserId).IsRequired();
-            builder.Property(_ => _.State).HasDefaultValue(OrderStates.New);
+            builder.Property(_ => _.State).HasDefaultValue(OrderStates.AwaitingPayment);
         }
     }
 }

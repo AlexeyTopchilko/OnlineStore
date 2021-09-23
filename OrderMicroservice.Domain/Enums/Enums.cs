@@ -2,7 +2,7 @@
 {
     public enum OrderStates
     {
-        New,
+        AwaitingPayment,
         Processing,
         Finished
     }

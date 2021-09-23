@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using OrderMicroservice.Repository.Context;
-using OrderMicroservice.Repository.Repository;
-using OrderMicroservice.Service.Services.OrderService;
-using OrderMicroservice.Service.Services.RabbitMqService;
+using PaymentMicroservice.Service.Services;
+using PaymentMicroservice.Service.Services.RabbitMqService;
 
-namespace OrderMicroservice.API
+namespace PaymentMicroservice.API
 {
     public class Startup
     {
@@ -24,24 +21,14 @@ namespace OrderMicroservice.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<OrderContext>(options =>
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("OrderMicroservice.Repository"));
-                options.UseLazyLoadingProxies();
-            });
-
-            services.AddScoped(typeof(IRepositoryGeneric<>), typeof(RepositoryGeneric<>));
-
+            services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IRabbitMqService, RabbitMqService>();
-
-            services.AddTransient<IOrderService, OrderService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "OrderMicroservice.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PaymentMicroservice.API", Version = "v1" });
             });
-            services.AddHostedService<RabbitBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,13 +36,10 @@ namespace OrderMicroservice.API
         {
             if (env.IsDevelopment())
             {
-                app.UseExceptionHandler("/errors");
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OrderMicroservice.API v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PaymentMicroservice.API v1"));
             }
-
-            app.UseExceptionHandler("/errors");
 
             app.UseRouting();
 

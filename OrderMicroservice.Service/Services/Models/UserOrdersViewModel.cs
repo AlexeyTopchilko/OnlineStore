@@ -6,8 +6,10 @@
 
         public string Address { get; set; }
 
-        public decimal TotalPrice { get; set; }
+        public string TotalPrice { get; set; }
 
         public string State { get; set; }
+
+        public string DateOfPayment { get; set; }
     }
 }

@@ -9,8 +9,6 @@ namespace OrderMicroservice.Service.Services.OrderService
     {
         Task DeleteByIdAsync(int id);
 
-        Task<IEnumerable<Domain.Entities.Order>> GetAllAsync();
-
         Task<OrderViewModel> GetByIdAsync(int id);
 
         Task<IEnumerable<UserOrdersViewModel>> GetByUserId(Guid userId);
@@ -18,5 +16,7 @@ namespace OrderMicroservice.Service.Services.OrderService
         Task<int> FormAnOrder(FormAnOrderModel model);
 
         Task ConfirmOrder(int orderId);
+
+        Task TakePayment(PaymentResult result);
     }
 }

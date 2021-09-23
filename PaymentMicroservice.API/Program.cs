@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace OrderMicroservice.API
+namespace PaymentMicroservice.API
 {
     public class Program
     {
@@ -15,7 +15,6 @@ namespace OrderMicroservice.API
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).UseDefaultServiceProvider(_ =>
-                    _.ValidateScopes = false);
+                });
     }
 }

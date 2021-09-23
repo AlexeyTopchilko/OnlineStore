@@ -240,6 +240,30 @@
       ],
       "UpstreamPathTemplate": "/GetOrdersByUserId?{params}",
       "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Payment/GetOrderInfo?{params}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "56547"
+        }
+      ],
+      "UpstreamPathTemplate": "/GetOrderInfo?{params}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Payment/Pay",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "56547"
+        }
+      ],
+      "UpstreamPathTemplate": "/Pay",
+      "UpstreamHttpMethod": [ "POST" ]
     }
   ],
   "GlobalConfiguration": {}

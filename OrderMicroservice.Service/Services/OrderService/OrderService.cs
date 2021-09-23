@@ -6,6 +6,7 @@ using OrderMicroservice.Service.Services.Models;
 using OrderMicroservice.Service.Services.RabbitMqService;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,7 +47,7 @@ namespace OrderMicroservice.Service.Services.OrderService
             await _orderRepository.DeleteAsync(order);
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
+        private async Task<IEnumerable<Order>> GetAllAsync()
         {
             var orders = await _orderRepository.GetAllAsync();
             return orders;
@@ -86,16 +87,15 @@ namespace OrderMicroservice.Service.Services.OrderService
             {
                 if (order == null) continue;
 
-                //var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(await _rabbitMqService.GetProductsInfo(order.CartId));
-
                 var address =
                     JsonConvert.DeserializeObject<AddressViewModel>(await _rabbitMqService.GetAddressInfo(order.AddressId));
                 var orderView = new UserOrdersViewModel
                 {
                     Id = order.Id,
                     Address = address.City+","+address.Street+","+address.HouseNumber,
-                    TotalPrice = order.TotalPrice,
-                    State = order.State.ToString()
+                    TotalPrice = order.TotalPrice + "$",
+                    State = order.State.ToString(),
+                    DateOfPayment = order.DateOfPayment == null? "---" : order.DateOfPayment.ToString()
                 };
 
                 ordersView.Add(orderView);
@@ -107,10 +107,19 @@ namespace OrderMicroservice.Service.Services.OrderService
         public async Task ConfirmOrder(int orderId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
-            order.State = OrderStates.Processing;
-            await _orderRepository.UpdateAsync(order);
 
             _rabbitMqService.LockTheCart(order.CartId);
+        }
+
+        public async Task TakePayment(PaymentResult result)
+        {
+            if (result.Paid)
+            {
+                var order = await _orderRepository.GetByIdAsync(result.OrderId);
+                order.DateOfPayment = DateTime.UtcNow;
+                order.State = OrderStates.Processing;
+                await _orderRepository.UpdateAsync(order);
+            }
         }
 
         private async Task<int> CreateOrder(FormAnOrderModel model)
@@ -120,7 +129,7 @@ namespace OrderMicroservice.Service.Services.OrderService
             {
                 UserId = model.UserId,
                 AddressId = model.AddressId,
-                State = OrderStates.New,
+                State = OrderStates.AwaitingPayment,
                 CartId = model.CartId,
                 TotalPrice = decimal.Parse(totalPrice)
             };

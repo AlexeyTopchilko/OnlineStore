@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace CatalogMicroservice.API.Controllers
@@ -21,7 +22,7 @@ namespace CatalogMicroservice.API.Controllers
 
         [HttpGet]
         [Route("Products")]
-        public async Task<IActionResult> GetProducts(int sortMode, int skip, int take, int? categoryId = null, string name = null)
+        public async Task<IActionResult> GetProducts(int sortMode, int skip, int take, int? categoryId = null, [MaxLength(15)]string name = null)
         {
             try
             {

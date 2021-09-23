@@ -13,6 +13,8 @@ namespace OrderMicroservice.Domain.Entities
 
         public int AddressId { get; set; }
 
+        public DateTime? DateOfPayment { get; set; }
+
         public decimal TotalPrice { get; set; }
     }
 }
