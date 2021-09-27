@@ -59,7 +59,7 @@ namespace CartMicroservice.Service.Services.CartService
                 var totalPrice = await CalculateTotalPrice(productsResponse);
                 cart.TotalPrice = totalPrice;
                 await _cartRepository.UpdateAsync(cart);
-                var cartView = new CartViewModel()
+                var cartView = new CartViewModel
                 {
                     Id = cart.Id,
                     UserId = cart.UserId,
@@ -123,7 +123,7 @@ namespace CartMicroservice.Service.Services.CartService
             var totalPrice = await CalculateTotalPrice(productsResponse);
             cart.TotalPrice = totalPrice;
             await _cartRepository.UpdateAsync(cart);
-            var orderView = new CartViewModel()
+            var orderView = new CartViewModel
             {
                 Id = cart.Id,
                 UserId = cart.UserId,

@@ -78,8 +78,7 @@ namespace CatalogMicroservice.Service.Services.CategoryService
 
         private static SortProps<Category, dynamic> SetSortProps()
         {
-            var sortProps = new SortProps<Category, dynamic>()
-            { Direction = SortDirection.Ascending, Expression = _ => _.Name };
+            var sortProps = new SortProps<Category, dynamic> { Direction = SortDirection.Ascending, Expression = _ => _.Name };
             return sortProps;
         }
 

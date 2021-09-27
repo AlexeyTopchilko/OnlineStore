@@ -24,7 +24,7 @@ namespace CatalogMicroservice.Service.Services.RabbitMqService
         public RabbitMqService(IRepositoryGeneric<Product> productRepository)
         {
             _productRepository = productRepository;
-            var factory = new ConnectionFactory();
+            var factory = new ConnectionFactory { HostName = "rabbitmq", UserName = "guest", Password = "guest", };
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
 
@@ -50,7 +50,7 @@ namespace CatalogMicroservice.Service.Services.RabbitMqService
             var responseList = (from item in products
                                 let requestModel = model.FirstOrDefault(_ => _.ProductId == item.Id)
                                 where requestModel != null
-                                select new ProductsResponseModel()
+                                select new ProductsResponseModel
                                 {
                                     Id = requestModel.Id,
                                     ProductId = item.Id,

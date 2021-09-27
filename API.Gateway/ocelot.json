@@ -6,8 +6,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "64045"
+          "Host": "auth",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Register",
@@ -18,8 +18,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "64045"
+          "Host": "auth",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Login",
@@ -30,8 +30,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "10444"
+          "Host": "catalogservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Categories",
@@ -42,8 +42,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "10444"
+          "Host": "catalogservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Products?{params}",
@@ -54,8 +54,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "10444"
+          "Host": "catalogservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/ProductById?{params}",
@@ -66,8 +66,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/AddToCart",
@@ -78,8 +78,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/GetActiveByUser?{params}",
@@ -90,8 +90,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/GetTotalQuantity?{params}",
@@ -102,8 +102,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/DeleteCartLine?{params}",
@@ -114,8 +114,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Minus?{params}",
@@ -126,8 +126,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Plus?{params}",
@@ -138,8 +138,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/ChangeQuantity?{params}",
@@ -150,8 +150,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "48726"
+          "Host": "cart",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/LockCart?{params}",
@@ -162,8 +162,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "23433"
+          "Host": "addressservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/DeleteAddress?{params}",
@@ -174,8 +174,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "23433"
+          "Host": "addressservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/GetUserAddresses?{params}",
@@ -186,8 +186,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "23433"
+          "Host": "addressservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/CreateAddress",
@@ -198,8 +198,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "9434"
+          "Host": "orderservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/GetOrderById?{params}",
@@ -210,8 +210,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "9434"
+          "Host": "orderservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/FormAnOrder",
@@ -222,8 +222,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "9434"
+          "Host": "orderservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/ConfirmOrder?{params}",
@@ -234,8 +234,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "9434"
+          "Host": "orderservice",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/GetOrdersByUserId?{params}",
@@ -246,8 +246,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "56547"
+          "Host": "payment",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/GetOrderInfo?{params}",
@@ -258,8 +258,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": "56547"
+          "Host": "payment",
+          "Port": "80"
         }
       ],
       "UpstreamPathTemplate": "/Pay",

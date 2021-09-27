@@ -33,7 +33,7 @@ namespace CartMicroservice.Service.Services.RabbitMqService
             _rabbitMqService = rabbitMqService;
             _repository = repository;
 
-            var factory = new ConnectionFactory();
+            var factory = new ConnectionFactory { HostName = "rabbitmq", UserName = "guest", Password = "guest", };
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
 

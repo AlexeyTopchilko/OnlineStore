@@ -28,7 +28,7 @@ namespace OrderMicroservice.Service.Services.RabbitMqService
 
         public RabbitMqService()
         {
-            var factory = new ConnectionFactory();
+            var factory = new ConnectionFactory { HostName = "rabbitmq", UserName = "guest", Password = "guest", };
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();

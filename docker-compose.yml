@@ -1,0 +1,101 @@
+version: '3.4'
+
+services:
+ mssql:
+    image: "mcr.microsoft.com/mssql/server:2019-CU12-ubuntu-20.04"
+    container_name: mssql
+    hostname: mssql
+    volumes:
+    - mssql:/var/opt/mssql
+    environment:
+      SA_PASSWORD: "Pa$$w0rd123!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    restart: always   
+    ports:
+      - "1433:1433" 
+
+ rabbitmq:
+    image: "rabbitmq:3-management-alpine"
+    container_name: rabbitmq
+    ports :
+     - "15672:15672"
+     - "5672:5672"
+    restart: always
+
+ catalog:
+    container_name: catalogservice
+    build:
+        context: .
+        dockerfile: CatalogMicroservice.API/Dockerfile
+    depends_on:
+        - rabbitmq
+        - mssql
+    restart: always
+
+ order:
+    container_name: orderservice
+    build:
+        context: .
+        dockerfile: OrderMicroservice.API/Dockerfile
+    depends_on:
+        - rabbitmq
+        - mssql
+    restart: always
+
+ addressmicroservice.api:
+    container_name: addressservice
+    build:
+      context: .
+      dockerfile: AddressMicroservice.API/Dockerfile
+    depends_on:
+        - rabbitmq
+        - mssql
+    restart: always
+
+ authentication:
+    container_name: auth
+    build:
+        context: .
+        dockerfile: AuthenticationMicroservice.API/Dockerfile
+    depends_on:
+        - mssql
+    restart: always
+
+ cartservice:
+    container_name: cart
+    build:
+        context: .
+        dockerfile: CartMicroservice.API/Dockerfile
+    depends_on:
+        - rabbitmq
+        - mssql
+    restart: always
+
+ paymentservice:
+    container_name: payment
+    build:
+        context: .
+        dockerfile: PaymentMicroservice.API/Dockerfile
+    depends_on:
+        - rabbitmq
+        - mssql
+    restart: always
+
+ gateway:
+    container_name: gateway
+    build:
+        context: .
+        dockerfile: API.Gateway/Dockerfile
+    ports:
+        - "22948:80"
+    depends_on:
+        - cartservice
+        - authentication
+        - addressmicroservice.api
+        - order
+        - catalog 
+        - paymentservice
+    restart: always
+volumes:
+    mssql:

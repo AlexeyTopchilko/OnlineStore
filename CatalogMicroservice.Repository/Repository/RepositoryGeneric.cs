@@ -57,7 +57,7 @@ namespace CatalogMicroservice.Repository.Repository
             var count = _dbSet.Where(predicate).Count();
             var totalPages = count == 0 ? 1 : (count % sortProps.Take == 0 ? count / sortProps.Take : count / sortProps.Take + 1);
 
-            var response = new ProductsResponse<TEntity>()
+            var response = new ProductsResponse<TEntity>
             {
                 Products = products,
                 TotalPages = totalPages

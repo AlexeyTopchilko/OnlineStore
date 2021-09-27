@@ -21,7 +21,7 @@ namespace AddressMicroservice.Service.Services.RabbitMqService
         {
             _addressRepository = addressRepository;
 
-            var factory = new ConnectionFactory();
+            var factory = new ConnectionFactory { HostName = "rabbitmq", UserName = "guest", Password = "guest", };
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
 

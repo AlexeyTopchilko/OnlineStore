@@ -10,10 +10,10 @@ COPY ["AuthenticationMicroservice.API/AuthenticationMicroservice.API.csproj", "A
 RUN dotnet restore "AuthenticationMicroservice.API/AuthenticationMicroservice.API.csproj"
 COPY . .
 WORKDIR "/src/AuthenticationMicroservice.API"
-RUN dotnet build "AuthenticationMicroservice.API.csproj" -c Release -o /app/build
+RUN dotnet build "AuthenticationMicroservice.API.csproj" -c Debug -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "AuthenticationMicroservice.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "AuthenticationMicroservice.API.csproj" -c Debug -o /app/publish
 
 FROM base AS final
 WORKDIR /app

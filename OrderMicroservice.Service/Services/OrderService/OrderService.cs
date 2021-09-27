@@ -6,7 +6,6 @@ using OrderMicroservice.Service.Services.Models;
 using OrderMicroservice.Service.Services.RabbitMqService;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -92,10 +91,10 @@ namespace OrderMicroservice.Service.Services.OrderService
                 var orderView = new UserOrdersViewModel
                 {
                     Id = order.Id,
-                    Address = address.City+","+address.Street+","+address.HouseNumber,
+                    Address = address.City + "," + address.Street + "," + address.HouseNumber,
                     TotalPrice = order.TotalPrice + "$",
                     State = order.State.ToString(),
-                    DateOfPayment = order.DateOfPayment == null? "---" : order.DateOfPayment.ToString()
+                    DateOfPayment = order.DateOfPayment == null ? "---" : order.DateOfPayment.ToString()
                 };
 
                 ordersView.Add(orderView);

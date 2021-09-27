@@ -133,20 +133,15 @@ namespace CatalogMicroservice.Service.Services.ProductService
         {
             var sortProps = sortMode switch
             {
-                (int)SortState.Default => new SortProps<Product, dynamic>()
-                { Direction = SortDirection.Ascending, Expression = _ => _.Id, Skip = skip, Take = take },
+                (int)SortState.Default => new SortProps<Product, dynamic> { Direction = SortDirection.Ascending, Expression = _ => _.Id, Skip = skip, Take = take },
 
-                (int)SortState.PriceAsc => new SortProps<Product, dynamic>()
-                { Direction = SortDirection.Ascending, Expression = _ => _.Price, Skip = skip, Take = take },
+                (int)SortState.PriceAsc => new SortProps<Product, dynamic> { Direction = SortDirection.Ascending, Expression = _ => _.Price, Skip = skip, Take = take },
 
-                (int)SortState.PriceDesc => new SortProps<Product, dynamic>()
-                { Direction = SortDirection.Descending, Expression = _ => _.Price, Skip = skip, Take = take },
+                (int)SortState.PriceDesc => new SortProps<Product, dynamic> { Direction = SortDirection.Descending, Expression = _ => _.Price, Skip = skip, Take = take },
 
-                (int)SortState.ByName => new SortProps<Product, dynamic>()
-                { Direction = SortDirection.Ascending, Expression = _ => _.Name, Skip = skip, Take = take },
+                (int)SortState.ByName => new SortProps<Product, dynamic> { Direction = SortDirection.Ascending, Expression = _ => _.Name, Skip = skip, Take = take },
 
-                _ => new SortProps<Product, dynamic>()
-                { Direction = SortDirection.Ascending, Expression = _ => _.Id, Skip = skip, Take = take },
+                _ => new SortProps<Product, dynamic> { Direction = SortDirection.Ascending, Expression = _ => _.Id, Skip = skip, Take = take },
             };
 
             return sortProps;
