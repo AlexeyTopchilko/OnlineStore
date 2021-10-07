@@ -2,13 +2,13 @@
 using CartMicroservice.Domain.Entities;
 using CartMicroservice.Repository.Repository;
 using CartMicroservice.Service.Services.CartService.Models;
+using CartMicroservice.Service.Services.RabbitMqService;
 using CartMicroservice.Service.Services.RabbitMqService.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CartMicroservice.Service.Services.RabbitMqService;
 
 namespace CartMicroservice.Service.Services.CartService
 {
@@ -64,7 +64,6 @@ namespace CartMicroservice.Service.Services.CartService
                     Id = cart.Id,
                     UserId = cart.UserId,
                     Products = productsResponse,
-                    TotalPrice = totalPrice
                 };
                 cartsView.Add(cartView);
             }
@@ -97,18 +96,18 @@ namespace CartMicroservice.Service.Services.CartService
             }
         }
 
-        public async Task ChangeQuantity(int id, int quantity)
-        {
-            var product = await _cartProductsRepository.GetByIdAsync(id);
-            product.Quantity = quantity;
-            await _cartProductsRepository.UpdateAsync(product);
-        }
+        //public async Task ChangeQuantity(int id, int quantity)
+        //{
+        //    var product = await _cartProductsRepository.GetByIdAsync(id);
+        //    product.Quantity = quantity;
+        //    await _cartProductsRepository.UpdateAsync(product);
+        //}
 
-        public async Task RemoveCartLine(int id)
-        {
-            var product = await _cartProductsRepository.GetByIdAsync(id);
-            await _cartProductsRepository.DeleteAsync(product);
-        }
+        //public async Task RemoveCartLine(int id)
+        //{
+        //    var product = await _cartProductsRepository.GetByIdAsync(id);
+        //    await _cartProductsRepository.DeleteAsync(product);
+        //}
 
         public async Task<CartViewModel> GetActiveCartByUser(Guid userId)
         {
@@ -127,11 +126,32 @@ namespace CartMicroservice.Service.Services.CartService
             {
                 Id = cart.Id,
                 UserId = cart.UserId,
-                Products = productsResponse,
-                TotalPrice = totalPrice
+                Products = productsResponse
             };
 
             return orderView;
+        }
+
+        public async Task UpdateCart(CartViewModel model)
+        {
+            var ids = model.Products.Select(_ => _.Id).ToList();
+            var cart = await _cartRepository.GetByIdAsync(model.Id);
+            var deletedProducts = cart.Products.Where(_ => !ids.Contains(_.Id)).ToList();
+
+
+            var newProducts = cart.Products.Where(_ => ids.Contains(_.Id));
+            var updProducts = new List<CartProducts>();
+            foreach (var product in newProducts)
+            {
+                var quantity = model.Products.FirstOrDefault(_ => _.Id == product.Id).Quantity;
+                product.Quantity = quantity;
+                updProducts.Add(product);
+                if (quantity == 0)
+                    deletedProducts.Add(product);
+            }
+            await _cartProductsRepository.DeleteRangeAsync(deletedProducts);
+            await _cartProductsRepository.UpdateRangeAsync(updProducts);
+            await UpdateTotalPrice(model.Id);
         }
 
         public async Task LockTheCart(int cartId)
@@ -142,6 +162,20 @@ namespace CartMicroservice.Service.Services.CartService
         }
 
         #region PrivateMethods
+
+        private async Task UpdateTotalPrice(int cartId)
+        {
+            var cart = await _cartRepository.GetByIdAsync(cartId);
+            var products = _mapper.Map<IEnumerable<ProductsRequestModel>>(cart.Products.Where(_ => _.DeletedDate == null));
+            var productsResponse =
+                JsonConvert.DeserializeObject<IEnumerable<ProductsResponseModel>>(
+                    await _rabbitMqService.SendAsync(products))?.ToList();
+
+            var totalPrice = productsResponse.Sum(product => product.TotalPrice);
+            cart.TotalPrice = totalPrice;
+            await _cartRepository.UpdateAsync(cart);
+        }
+
         private async Task<Cart> GetNonLockedByUser(Guid id)
         {
             var cart =
@@ -176,6 +210,7 @@ namespace CartMicroservice.Service.Services.CartService
                 Quantity = model.Quantity
             };
             await _cartProductsRepository.CreateAsync(products);
+            await UpdateTotalPrice(activeCart.Id);
         }
 
         private async Task AddProductToExistingCart(AddToCartModel model)
@@ -209,6 +244,7 @@ namespace CartMicroservice.Service.Services.CartService
                 };
 
                 await _cartProductsRepository.CreateAsync(products);
+                await UpdateTotalPrice(cart.Id);
             }
         }
         #endregion

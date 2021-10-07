@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using CatalogMicroservice.Service.Services.ProductService.Models.RequestModels;
 
 namespace CatalogMicroservice.API.Controllers
 {
@@ -20,13 +21,13 @@ namespace CatalogMicroservice.API.Controllers
             _productService = service;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("Products")]
-        public async Task<IActionResult> GetProducts(int sortMode, int skip, int take, int? categoryId = null, [MaxLength(15)]string name = null)
+        public async Task<IActionResult> GetProducts([FromBody]GetProductsRequestModel model)
         {
             try
             {
-                var productsView = await _productService.GetProductsAsync(sortMode, skip, take, categoryId, name);
+                var productsView = await _productService.GetProductsAsync(model);
                 return productsView != null ? Ok(productsView) : Ok(new ProductsView());
             }
             catch (SqlException e)

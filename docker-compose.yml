@@ -6,7 +6,7 @@ services:
     container_name: mssql
     hostname: mssql
     volumes:
-    - mssql:/var/opt/mssql
+    - onlinestoreiis_mssql:/var/opt/mssql
     environment:
       SA_PASSWORD: "Pa$$w0rd123!"
       ACCEPT_EULA: "Y"
@@ -89,6 +89,8 @@ services:
         dockerfile: API.Gateway/Dockerfile
     ports:
         - "22948:80"
+    #secrets:
+    #- AuthParams
     depends_on:
         - cartservice
         - authentication
@@ -98,4 +100,9 @@ services:
         - paymentservice
     restart: always
 volumes:
-    mssql:
+    onlinestoreiis_mssql:
+        external: true
+    
+#secrets:
+#    AuthParams:
+#        file: C:\Users\aliaksei.tapchylka\AppData\Roaming\Microsoft\UserSecrets\bd898d0a-8421-4e3d-aa23-e3f07a653f0c\secrets.json

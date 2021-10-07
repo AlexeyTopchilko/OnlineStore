@@ -6,7 +6,7 @@ namespace AddressMicroservice.Repository.Context.Configuration
 {
     public class AddressConfiguration : IEntityTypeConfiguration<Address>
     {
-        public void Configure(EntityTypeBuilder<Domain.Entities.Address> builder)
+        public void Configure(EntityTypeBuilder<Address> builder)
         {
             builder.HasKey(_ => _.Id);
             builder.Property(_ => _.Id).ValueGeneratedOnAdd();

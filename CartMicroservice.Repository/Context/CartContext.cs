@@ -39,6 +39,7 @@ namespace CartMicroservice.Repository.Context
 
                     case EntityState.Modified:
                         entry.CurrentValues["UpdatedDate"] = DateTime.UtcNow;
+                        entry.Property("AddedDate").IsModified = false;
                         break;
 
                     case EntityState.Deleted:

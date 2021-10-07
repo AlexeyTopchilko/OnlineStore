@@ -20,5 +20,9 @@ namespace CartMicroservice.Repository.Repository
         Task UpdateAsync(TEntity entity);
 
         Task DeleteAsync(TEntity entity);
+
+        Task DeleteRangeAsync(IEnumerable<TEntity> entities);
+
+        Task UpdateRangeAsync(IEnumerable<TEntity> entities);
     }
 }

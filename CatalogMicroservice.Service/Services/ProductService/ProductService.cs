@@ -59,23 +59,23 @@ namespace CatalogMicroservice.Service.Services.ProductService
             return product != null && product.DeletedDate == null ? _mapper.Map<ProductView>(product) : null;
         }
 
-        public async Task<ProductsView> GetProductsAsync(int sortMode, int skip, int take, int? categoryId = null, string name = null)
+        public async Task<ProductsView> GetProductsAsync(GetProductsRequestModel model)
         {
-            if (categoryId == null && name == null)
+            if (model.CategoryId == null && model.Name == null)
             {
-                var sortProps = SetSortProps(sortMode, skip, take);
+                var sortProps = SetSortProps(model.SortMode, model.Skip, model.Take);
                 var products = await _productRepository.GetByPredicateWithSortAsync(_ => _.DeletedDate == null, sortProps);
 
                 return products.Products.Any() ? _mapper.Map<ProductsView>(products) : null;
             }
-            else if (categoryId != null)
+            if (model.CategoryId != null)
             {
-                var products = await GetByCategoryAsync(sortMode, skip, take, categoryId);
+                var products = await GetByCategoryAsync(model.SortMode, model.Skip, model.Take, model.CategoryId);
                 return products.Products != null ? _mapper.Map<ProductsView>(products) : null;
             }
-            else if (name != null)
+            if (model.Name != null)
             {
-                var products = await GetByNameAsync(sortMode, skip, take, name);
+                var products = await GetByNameAsync(model.SortMode, model.Skip, model.Take, model.Name);
                 return products.Products != null ? _mapper.Map<ProductsView>(products) : null;
             }
             return null;
@@ -83,7 +83,7 @@ namespace CatalogMicroservice.Service.Services.ProductService
 
         public async Task<bool> IsProductExistAsync(string productName)
         {
-            return (await _productRepository.GetByPredicateAsync(_ => _.Name == productName)).Any();
+            return (await _productRepository.GetByPredicateAsync(_ => _.Name.Equals(productName, StringComparison.OrdinalIgnoreCase))).Any();
         }
 
         public async Task RemoveAsync(Product product, Guid userId)

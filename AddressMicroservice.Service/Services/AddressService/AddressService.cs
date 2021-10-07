@@ -17,7 +17,7 @@ namespace AddressMicroservice.Service.Services.AddressService
         }
         public async Task AddAddress(AddAddressModel model)
         {
-            var address = new Domain.Entities.Address
+            var address = new Address
             {
                 UserId = model.UserId,
                 City = model.City,

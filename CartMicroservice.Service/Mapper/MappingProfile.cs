@@ -9,9 +9,11 @@ namespace CartMicroservice.Service.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<CartProducts, ProductsRequestModel>();
+            CreateMap<CartProducts, ProductsRequestModel>().ReverseMap();
 
-            CreateMap<Domain.Entities.Cart, CartViewModel>();
+            CreateMap<Cart, CartViewModel>().ReverseMap();
+
+            CreateMap<ProductsResponseModel, CartProducts>().ReverseMap();
         }
     }
 }

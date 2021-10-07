@@ -8,5 +8,7 @@ namespace PaymentMicroservice.Service.Services
         void Pay(PaymentResult result);
 
         Task<OrderInfo> GetOrderInfo(int orderId);
+
+        Task<Response> PayAsync(string cardNumber, int month, int year, string cvc, int orderId);
     }
 }

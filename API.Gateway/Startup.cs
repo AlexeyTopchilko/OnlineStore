@@ -13,18 +13,22 @@ namespace API.Gateway
     public class Startup
     {
         private readonly AuthParams _authParams;
+
+        private IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             _authParams = Configuration.GetSection("AuthParams").Get<AuthParams>();
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AuthParams>(Configuration.GetSection("AuthParams"));
+            
+
+            //services.Configure<AuthParams>(Configuration.GetSection("AuthParams"));
+
             services.AddAuthentication()
                 .AddJwtBearer("Key", _ =>
                 {

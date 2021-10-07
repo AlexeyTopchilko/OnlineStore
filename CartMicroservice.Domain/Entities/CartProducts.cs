@@ -4,7 +4,7 @@
     {
         public int ProductId { get; set; }
 
-        public int OrderId { get; set; }
+        public int OrderId { get; set; } //rename to CartId
 
         public virtual Cart Cart { get; set; }
 

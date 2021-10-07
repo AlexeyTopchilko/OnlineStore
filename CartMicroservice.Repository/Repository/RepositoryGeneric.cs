@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using CartMicroservice.Domain.Entities;
 using CartMicroservice.Repository.Context;
@@ -28,6 +31,18 @@ namespace CartMicroservice.Repository.Repository
             var entryEntity = await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entryEntity;
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<TEntity> entities)
+        {
+            await Task.Run(() => _dbSet.RemoveRange(entities));
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRangeAsync(IEnumerable<TEntity> entities)
+        {
+            await Task.Run(() => _dbSet.UpdateRange(entities));
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(TEntity entity)

@@ -30,15 +30,13 @@ namespace OrderMicroservice.Service.Services.OrderService
                 var orderId = await CreateOrder(model);
                 return orderId;
             }
-            else
-            {
-                var totalPrice = await _rabbitMqService.GetTotalPrice(model.CartId);
+
+            var totalPrice = await _rabbitMqService.GetTotalPrice(model.CartId);
                 order.AddressId = model.AddressId;
                 order.TotalPrice = decimal.Parse(totalPrice);
                 await _orderRepository.UpdateAsync(order);
                 return order.Id;
             }
-        }
 
         public async Task DeleteByIdAsync(int id)
         {
@@ -74,8 +72,8 @@ namespace OrderMicroservice.Service.Services.OrderService
 
                 return orderView;
             }
-            else
-                return null;
+
+            return null;
         }
 
         public async Task<IEnumerable<UserOrdersViewModel>> GetByUserId(Guid userId)

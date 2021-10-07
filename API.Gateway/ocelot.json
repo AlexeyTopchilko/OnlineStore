@@ -38,7 +38,7 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/Product/Products?{params}",
+      "DownstreamPathTemplate": "/api/Product/Products",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -46,8 +46,8 @@
           "Port": "80"
         }
       ],
-      "UpstreamPathTemplate": "/Products?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamPathTemplate": "/Products",
+      "UpstreamHttpMethod": [ "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/Product/ProductById?{params}",
@@ -71,7 +71,11 @@
         }
       ],
       "UpstreamPathTemplate": "/AddToCart",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Cart/GetActiveByUser?{params}",
@@ -83,7 +87,27 @@
         }
       ],
       "UpstreamPathTemplate": "/GetActiveByUser?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/Cart/UpdateCart",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cart",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/UpdateCart",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Cart/GetTotalQuantity?{params}",
@@ -95,55 +119,11 @@
         }
       ],
       "UpstreamPathTemplate": "/GetTotalQuantity?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Cart/DeleteCartLine?{params}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "cart",
-          "Port": "80"
-        }
-      ],
-      "UpstreamPathTemplate": "/DeleteCartLine?{params}",
-      "UpstreamHttpMethod": [ "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Cart/Minus?{params}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "cart",
-          "Port": "80"
-        }
-      ],
-      "UpstreamPathTemplate": "/Minus?{params}",
-      "UpstreamHttpMethod": [ "PUT" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Cart/Plus?{params}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "cart",
-          "Port": "80"
-        }
-      ],
-      "UpstreamPathTemplate": "/Plus?{params}",
-      "UpstreamHttpMethod": [ "PUT" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Cart/ChangeQuantity?{params}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "cart",
-          "Port": "80"
-        }
-      ],
-      "UpstreamPathTemplate": "/ChangeQuantity?{params}",
-      "UpstreamHttpMethod": [ "PUT" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Cart/LockCart?{params}",
@@ -155,7 +135,11 @@
         }
       ],
       "UpstreamPathTemplate": "/LockCart?{params}",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Address/DeleteAddress?{params}",
@@ -167,7 +151,11 @@
         }
       ],
       "UpstreamPathTemplate": "/DeleteAddress?{params}",
-      "UpstreamHttpMethod": [ "DELETE" ]
+      "UpstreamHttpMethod": [ "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Address/GetUserAddresses?{params}",
@@ -179,7 +167,11 @@
         }
       ],
       "UpstreamPathTemplate": "/GetUserAddresses?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Address/CreateAddress",
@@ -191,7 +183,11 @@
         }
       ],
       "UpstreamPathTemplate": "/CreateAddress",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Order/GetOrderById?{params}",
@@ -203,7 +199,11 @@
         }
       ],
       "UpstreamPathTemplate": "/GetOrderById?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Order/FormAnOrder",
@@ -215,7 +215,11 @@
         }
       ],
       "UpstreamPathTemplate": "/FormAnOrder",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Order/ConfirmOrder?{params}",
@@ -227,7 +231,11 @@
         }
       ],
       "UpstreamPathTemplate": "/ConfirmOrder?{params}",
-      "UpstreamHttpMethod": [ "PUT" ]
+      "UpstreamHttpMethod": [ "PUT" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Order/GetOrdersByUserId?{params}",
@@ -239,7 +247,11 @@
         }
       ],
       "UpstreamPathTemplate": "/GetOrdersByUserId?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Payment/GetOrderInfo?{params}",
@@ -251,7 +263,11 @@
         }
       ],
       "UpstreamPathTemplate": "/GetOrderInfo?{params}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/Payment/Pay",
@@ -263,7 +279,27 @@
         }
       ],
       "UpstreamPathTemplate": "/Pay",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Key",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/Payment/PayStripe",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "payment",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/PayStripe",
       "UpstreamHttpMethod": [ "POST" ]
+      //"AuthenticationOptions": {
+      //  "AuthenticationProviderKey": "Key",
+      //  "AllowedScopes": []
+      //}
     }
   ],
   "GlobalConfiguration": {}

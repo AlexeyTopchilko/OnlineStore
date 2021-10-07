@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PaymentMicroservice.Service.Services;
 using PaymentMicroservice.Service.Services.Models;
+using Stripe;
 
 namespace PaymentMicroservice.API.Controllers
 {
@@ -28,6 +29,23 @@ namespace PaymentMicroservice.API.Controllers
         public void Pay([FromBody]PaymentResult result)
         {
             _paymentService.Pay(result);
+        }
+
+        [HttpPost]
+        [Route("PayStripe")]
+        public async Task<IActionResult> PayWithStripe([FromBody] PaymentModel model)
+        {
+            try
+            {
+                var result = await _paymentService.PayAsync(model.CardNumber, model.Month, model.Year, model.Cvc,
+                    model.OrderId);
+                return Ok(result);
+            }
+            catch (StripeException ex)
+            {
+                return Ok(new Response{ Status = "Failed!", Message = ex.Message});
+            }
+
         }
     }
 }

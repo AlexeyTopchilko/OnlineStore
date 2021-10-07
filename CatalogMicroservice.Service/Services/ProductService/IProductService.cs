@@ -8,7 +8,7 @@ namespace CatalogMicroservice.Service.Services.ProductService
 {
     public interface IProductService
     {
-        Task<ProductsView> GetProductsAsync(int sortMode, int skip, int take, int? categoryId = null, string name = null);
+        Task<ProductsView> GetProductsAsync(GetProductsRequestModel model);
 
         Task<ProductView> GetProductByIdAsync(int id);
 

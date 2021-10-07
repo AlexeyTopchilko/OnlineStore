@@ -52,44 +52,6 @@ namespace CartMicroservice.API.Controllers
             }
         }
 
-        [HttpDelete]
-        [Route("DeleteCartLine")]
-        public async Task<IActionResult> DeleteCartLine(int id)
-        {
-            try
-            {
-                await _cartService.RemoveCartLine(id);
-                var response = new
-                { Message = "Deleted successfully!" };
-                return Ok(response);
-            }
-            catch (SqlException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new { errorText = $"Something going wrong! \n {ex.Message} " });
-            }
-        }
-
-        [HttpPut]
-        [Route("ChangeQuantity")]
-        public async Task<IActionResult> ChangeQuantity(int id, int quantity)
-        {
-            try
-            {
-                await _cartService.ChangeQuantity(id, quantity);
-
-                var response = new
-                { Message = "Changed successfully!" };
-
-                return Ok(response);
-            }
-            catch (SqlException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new { errorText = $"Something going wrong! \n {ex.Message} " });
-            }
-        }
-
         [HttpPost]
         [Route("AddToCart")]
         public async Task<IActionResult> AddToCart(AddToCartModel model)
@@ -134,6 +96,22 @@ namespace CartMicroservice.API.Controllers
             {
                 var totalQuantity = await _cartService.GetTotalQuantity(userId);
                 return Ok(totalQuantity);
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { errorText = $"Something going wrong! \n {ex.Message} " });
+            }
+        }
+
+        [HttpPost]
+        [Route("UpdateCart")]
+        public async Task<IActionResult> UpdateCartAsync(CartViewModel model)
+        {
+            try
+            {
+                await _cartService.UpdateCart(model);
+                return Ok("Updated successfully!");
             }
             catch (SqlException ex)
             {

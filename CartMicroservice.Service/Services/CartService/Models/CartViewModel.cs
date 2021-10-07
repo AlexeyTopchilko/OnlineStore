@@ -11,7 +11,5 @@ namespace CartMicroservice.Service.Services.CartService.Models
         public IEnumerable<ProductsResponseModel> Products { get; set; }
 
         public Guid UserId { get; set; }
-
-        public decimal? TotalPrice { get; set; }
     }
 }
